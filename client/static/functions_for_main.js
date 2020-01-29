@@ -6,7 +6,7 @@ $(document).ready(function(){
   socket.on('all_docs_change', function (data) { 
     console.log('received all docs from DB', data.docs);
     data.docs.forEach(doc => {
-      $('#docList').append('<li class="nav-item active docClick" id="'+doc._id+'"> <img src="https://pngimage.net/wp-content/uploads/2018/06/logo-document-png.png" width="70" height="70"> <a class="nav-link">'+doc.name+'</a> </li>');
+      $('#docList').append('<div class="col-xs-2 docClick" id="'+doc._id+'"><div><img src="https://pngimage.net/wp-content/uploads/2018/06/logo-document-png.png" width="70" height="70"></div><div>'+doc.name+'</div></div>');
     });
     $('.docClick').click(function(){
       var id = $(this).attr('id');
@@ -30,7 +30,7 @@ $(document).ready(function(){
 
   socket.on('created_new_doc', function(data){
     console.log('received all docs from DB', data.newDoc);
-      $('#docList').append('<li id="doc" class="nav-item active"> <img src="https://pngimage.net/wp-content/uploads/2018/06/logo-document-png.png" width="70" height="70"> <a class="nav-link">'+data.newDoc.name+'</a> </li>');
+      $('#docList').append('<div class="col-xs-2 docClick" id="'+data.newDoc._id+'"><div><img src="https://pngimage.net/wp-content/uploads/2018/06/logo-document-png.png" width="70" height="70"></div><div>'+data.newDoc.name+'</div></div>');
   });
 
 })

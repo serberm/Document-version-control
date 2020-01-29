@@ -18,6 +18,10 @@ module.exports = function(app, io){
     response.render("doc_window");
   });
 
+  app.get('/d3_tree', (request, response) => {
+    response.render("d3_tree");
+  });
+
 
   io.on('connection', function(socket){ 
     console.log('Started connection with client...');

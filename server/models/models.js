@@ -6,5 +6,13 @@ module.exports = function(){
     name: String,
     text: String,
    })
+
+   const TreeSchema = new mongoose.Schema({
+     name: String,
+     parent: String,
+     children: [DocSchema]
+   })
+
    const Doc = mongoose.model('Doc', DocSchema);
+   const Tree = mongoose.model('Tree', TreeSchema);
 }

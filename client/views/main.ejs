@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" src="styles">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> 
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://quilljs.com/standalone/full/">
     <meta property="og:image" content="https://quilljs.com/assets/images/brand-asset.png">
@@ -16,29 +15,40 @@
     <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
     <link rel="canonical" href="https://quilljs.com/standalone/full/">
     <link type="application/atom+xml" rel="alternate" href="https://quilljs.com/feed.xml" title="Quill - Your powerful rich text editor">
-      
+    <link src="style.css" rel="stylesheet">
       
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai-sublime.min.css">
     <link rel="stylesheet" href="//cdn.quilljs.com/1.3.6/quill.snow.css">
     <title>Main</title>
+    <style>
+                /* to make nav bar scrollable */
+          .testimonial-group > .row {
+            overflow-x: auto;
+            white-space: nowrap;
+            background-color:silver;
+          }
+          .testimonial-group > .row > .col-xs-2 {
+            display: inline-block;
+            float: none;
+          }
+
+          .col-xs-2 { color:black; font-size: 20px; padding-bottom: 5px; padding-top: 5px; }
+    </style>
   </head>
   <body>
     
-    <nav id='navBar' class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" id='home'>
-        <img src="https://zapier.cachefly.net/storage/photos/b4a925f6c39483a70247b87031d0f67c.png" width='70' height='70'>
-      </a>
-    
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul id='docList' class="navbar-nav mr-auto">
-          <li id='new_doc' class="nav-item active">
-            <img src="https://cdn1.iconfinder.com/data/icons/web-ui-2/16/UI_Icons_Outline-05-512.png" width="70" height="70">
-            <a class="nav-link">New Doc</a>
-          </li>
-        </ul>
+
+    <div id='navBar' class="container testimonial-group">
+      <div id='docList' class="row text-center">
+        <div id='home' class="col-xs-2">
+          <div><img src="https://zapier.cachefly.net/storage/photos/b4a925f6c39483a70247b87031d0f67c.png" width='70' height='70'></div><div>Home</div>
+        </div>
+        <div id='new_doc' class="col-xs-2">
+          <div><img src="https://cdn1.iconfinder.com/data/icons/web-ui-2/16/UI_Icons_Outline-05-512.png" width="70" height="70"></div><div>New Doc</div>
+        </div>
       </div>
-    </nav>
+    </div>
     <div id='mainBody'></div>
 
     <!-- Optional JavaScript -->

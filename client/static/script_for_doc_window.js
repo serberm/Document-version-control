@@ -13,7 +13,7 @@ var quill = new Quill('#editor-container', {
 socket.emit('get_doc_by_id', {id: thisDocId});
 socket.on('found_doc_by_id', function(data){
   if(data.doc.text){
-  $('#text_input').html(data.doc.text);
+  $('#editor-container').html(data.doc.text);
   }
 })
 
@@ -21,7 +21,7 @@ socket.on('found_doc_by_id', function(data){
 var form = document.querySelector('form');
 form.onsubmit = function(event) {
   event.preventDefault();
-  FormData = document.querySelector("#text_input").innerHTML
+  FormData = document.querySelector("#editor-container").innerHTML
   
   console.log("Submitted ", FormData);
   socket.emit('update_doc', {id: thisDocId, text: FormData});
