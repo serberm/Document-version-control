@@ -21,17 +21,52 @@ socket.on('found_doc_by_id', function(data){
 var form = document.querySelector('form');
 form.onsubmit = function(event) {
   event.preventDefault();
-  FormData = document.querySelector("#editor-container").innerHTML
+  console.log('Form submited...');
+  let FormData = document.querySelector("#editor-container").innerHTML
+  let branchName = $('#branch').val();
+
+  // getting doc from DB
+  socket.emit('get_doc_by_id', {id: thisDocId});
+  socket.on('found_doc_by_id', function(data){
+    //check if has tree exists(root)
+    if(!data.doc.root){
+      //creating new tree with this doc
+      console.log('no root, starting new tree');
+      socket.emit('start_new_tree', {doc: data.doc, text: FormData, branch: branchName});
+    }
+    if(data.doc.root){
+      console.log('has root');
+      //find last position in this tree and branch
+      socket.emit('get_last_position', {root: data.doc.root, branch: branchName});
+      socket.on('return_last_position', function(doc){
+        console.log('last element returned ', doc);
+        socket.emit('create_push_children_new_doc', {doc:{
+          _id: doc._id,
+          name:doc.name,
+          text: FormData,
+          root: doc.root,
+          branch: branchName,
+          position: doc.position
+        }});
+        socket.on('pushed_to_children', function(data){
+          console.log('parent got children ', data);
+        })
+      })
+    }
+  })
+  socket.on('started_tree', function(data){
+    console.log('Started new tree ...', data);
+  })
   
-  console.log("Submitted ", FormData);
-  socket.emit('update_doc', {id: thisDocId, text: FormData});
+
+  
+
+  
   
   return false;
 };
 
-// $('#text').click(function(){
-//   $('#editor-container').html(FormData);
-// })    To put it back
+
 
 
 

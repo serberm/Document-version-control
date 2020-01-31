@@ -1,3 +1,5 @@
+var socket = io();
+
 var treeData = [
   {
     "name": "Top Level",
@@ -30,6 +32,7 @@ var treeData = [
 ];
 
 
+
 // ************** Generate the tree diagram	 *****************
 var margin = {top: 20, right: 120, bottom: 20, left: 120},
 	width = 960 - margin.right - margin.left,
@@ -55,11 +58,11 @@ root = treeData[0];
 root.x0 = height / 2;
 root.y0 = 0;
   
-update(root);
 
 d3.select(self.frameElement).style("height", "500px");
 
 function update(source) {
+    console.log('reading global tree data ', Global_treeData);
 
   // Compute the new tree layout.
   var nodes = tree.nodes(root).reverse(),

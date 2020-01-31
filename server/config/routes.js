@@ -1,6 +1,16 @@
 const quotes = require('../controllers/quotes.js');
-const mongoose = require('mongoose'),
-Doc = mongoose.model('Doc')
+const mongoose = require('mongoose');
+Doc = mongoose.model('Doc');
+
+function containsRoot(array, doc){
+  array.forEach(element => {
+    if(element.root == doc.root){
+      return true;
+    }
+  })
+  return false;
+}
+
 
 module.exports = function(app, io){
 
@@ -25,11 +35,10 @@ module.exports = function(app, io){
 
   io.on('connection', function(socket){ 
     console.log('Started connection with client...');
-    
-    socket.on('new_doc', function(data){
+
+    socket.on('create_doc', function(data){
       const doc = new Doc();
       doc.name = data.name;
-      doc.text = data.text;
       doc.save()
       .then(newDoc => {
         console.log('created new doc ', newDoc);
@@ -40,22 +49,84 @@ module.exports = function(app, io){
       })
     })
 
-    socket.on('update_doc', function(data){
-      Doc.updateOne({_id: data.id},{
-        text: data.text
-      })
-      .then(doc => {
-        console.log('updated doc ', doc);
+    socket.on('start_new_tree', function(data){
+      Doc.findOneAndUpdate({_id: data.doc._id},{
+        text: data.text,
+        root: data.doc._id,
+        branch: data.branch,
+        position: 1
+      },{new:true})
+      .then(updatedDoc => {
+        console.log('updated doc/strated new tree ', updatedDoc);
+        socket.emit('started_tree', {updatedDoc: updatedDoc});
       })
       .catch(err => {
-        console.log('error updating doc', err);
+        socket.emit('started_tree', {err: err});
+      })
+    });
+
+    socket.on('get_tree', function(data){
+      Doc.find({root: data.root})
+      .then(tree => {
+        io.emit('return_tree', {tree: tree});
+      })
+      .catch(err => {
+        io.emit('return_tree', {err: err});
       })
     })
-    
-    socket.on('get_all_docs', function(){
+
+    socket.on('get_last_position', function(data){
       Doc.find()
       .then(docs => {
-        socket.emit('all_docs_change', {docs: docs});
+        let lastDoc = {position:0, name:'No Docs'};
+        docs.forEach(doc => {
+          if(doc.branch==data.branch && doc.root==data.root && doc.position > lastDoc.position){
+            lastDoc = doc;
+          }
+        });
+        socket.emit('return_last_position', lastDoc);
+      })
+      .catch(err => {
+        socket.emit('return_last_position', {err: err});
+      })
+    })
+
+    socket.on('create_push_children_new_doc', function(data){
+      const doc = new Doc();
+      doc.name = data.doc.name;
+      doc.text = data.doc.text;
+      doc.root = data.doc.root;
+      doc.branch = data.doc.branch;
+      doc.position = data.doc.position + 1;
+      doc.save()
+      .then(newDoc => {
+        Doc.findOneAndUpdate({_id:data.doc._id},{
+          $push: {children: newDoc._id}
+        },{new:true})
+        .then(updatedDoc => {
+          socket.emit('pushed_to_children', updatedDoc);
+        })
+        .catch(err => {
+          socket.emit('pushed_to_children', {err: err});
+        })
+      })
+      .catch(err => {
+        socket.emit('pushed_to_children', {err: err});
+      })
+    })
+
+    socket.on('get_all_docs_of_last_position', function(){
+      Doc.find()
+      .then(docs => {
+        let lastPositionDocs = [];
+        docs.forEach(doc => {
+          if(!containsRoot(lastPositionDocs, doc)){
+            if(!doc.children.length){
+              lastPositionDocs.push(doc);
+            }
+          }
+        })
+        socket.emit('all_docs_change', {docs: lastPositionDocs});
       })
       .catch(err => {
         socket.emit('all_docs_change', {err: err});

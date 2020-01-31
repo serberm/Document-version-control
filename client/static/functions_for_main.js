@@ -1,7 +1,9 @@
+var Global_treeData;
+
 $(document).ready(function(){
 
   var socket = io();
-  socket.emit('get_all_docs');
+  socket.emit('get_all_docs_of_last_position');
 
   socket.on('all_docs_change', function (data) { 
     console.log('received all docs from DB', data.docs);
@@ -10,9 +12,26 @@ $(document).ready(function(){
     });
     $('.docClick').click(function(){
       var id = $(this).attr('id');
+      var thisDoc = {};
       console.log('doc clicked');
       $.get("doc_window", function (data) {
         $("#mainBody").append(data, '<div id="'+id+'" class="doc_id"></div>');
+        $("#form-container").append('<button id="version_control" type="button" class="btn btn-success">Version Control</button>');
+        $("#version_control").click(function(){
+          $.get("d3_tree", function(data){
+            $("#form-container").append(data);
+            socket.emit("get_doc_by_id", {id:id});
+            socket.on('found_doc_by_id', function(data){
+              console.log('received root to get tree...', data.doc.root);
+              socket.emit('get_tree', {root:data.doc.root});
+              socket.on('return_tree', function(data){
+                console.log('got tree ...', data.tree);
+                Global_treeData = data.tree;
+                update(root); // creating d3 (trigger)
+              })
+            })
+          });
+        })
       });
     })
   });
